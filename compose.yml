@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  php_apache:
+    container_name: php_apache_container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - mysql
+
+  mysql:
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    container_name: mysql_container
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    environment:
+      MYSQL_USER: user1
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: false
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_container
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
